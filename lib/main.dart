@@ -1,20 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:task_applover/login/login_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task_applover/features/login/bloc/login_bloc.dart';
+
+import 'DI/dependencies_injection.dart';
+import 'features/login/login_page.dart';
 
 void main() {
-  runApp(MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  configureDependencies();
+  runApp(const TaskApplover());
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class TaskApplover extends StatelessWidget {
+  const TaskApplover({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'App Lover Task',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return BlocProvider(
+      create: (context) => LoginBloc(),
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          fontFamily: 'Roboto',
+          hintColor: Colors.white,
+          primaryColor: Colors.white,
+          colorScheme: ThemeData().colorScheme.copyWith(primary: Colors.white),
+        ),
+        home: LoginPage(),
       ),
-      home: LoginPage(),
     );
   }
 }

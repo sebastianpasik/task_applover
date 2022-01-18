@@ -1,12 +1,6 @@
-# TASK_APPLOVER
+# task_applover
 
-Task for APP_LOVER Flutter team released on 12/01/2022 and handed in on 17/01/2022
-
-Technology applied:
-- bloc
-- getit
-- autoroute
-
+A new Flutter project.
 
 ## Getting Started
 
