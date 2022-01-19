@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:task_applover/features/loader_and_success/loader_and_success_page.dart';
 import 'package:task_applover/helpers/fields_validator.dart';
 import 'package:task_applover/utilities/appl_assets.dart';
 import 'package:task_applover/utilities/appl_colors.dart';
+
+import 'bloc/login_bloc.dart';
 
 class LoginPage extends StatefulWidget {
   final FieldsValidator _fieldsValidator = FieldsValidator();
@@ -23,7 +26,6 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: ApplColor.background,
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 52.0),
           child: Form(
@@ -41,62 +43,24 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(color: Colors.white),
                 ),
                 const SizedBox(height: 16.0),
-                TextFormField(
+                GenericTextField(
+                  labelText: 'Email address',
                   controller: emailAddress,
-                  style: const TextStyle(color: Colors.white),
                   validator: (text) => widget._fieldsValidator.validateEmail(text),
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Colors.white),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(
-                        color: Colors.white,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(
-                        color: Colors.white,
-                      ),
-                    ),
-                    labelText: 'Email address',
-                  ),
                 ),
                 const SizedBox(height: 16.0),
-                TextFormField(
+                GenericTextField(
+                  labelText: 'Password',
                   controller: password,
-                  style: const TextStyle(color: Colors.white),
-                  obscureText: hidePassword,
                   validator: (text) => widget._fieldsValidator.validatePassword(text),
-                  decoration: InputDecoration(
-                    suffixIcon: IconButton(
-                      icon: hidePassword ? const Icon(Icons.visibility_off) : const Icon(Icons.visibility),
-                      onPressed: () {
-                        setState(() {
-                          hidePassword = !hidePassword;
-                        });
-                      },
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Colors.white),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(
-                        color: Colors.white,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(
-                        color: Colors.white,
-                      ),
-                    ),
-                    labelText: 'Password',
+                  obscureText: hidePassword,
+                  sufixIcon: IconButton(
+                    icon: hidePassword ? const Icon(Icons.visibility_off) : const Icon(Icons.visibility),
+                    onPressed: () {
+                      setState(() {
+                        hidePassword = !hidePassword;
+                      });
+                    },
                   ),
                 ),
                 const SizedBox(height: 16.0),
@@ -104,11 +68,13 @@ class _LoginPageState extends State<LoginPage> {
                   text: 'Login',
                   onPressed: () => setState(() {
                     if (_formKey.currentState!.validate()) {
+                      context.read<LoginBloc>().add(const LoginEvent.saveData());
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LoaderAndSuccessPage(),
-                          ));
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoaderAndSuccessPage(),
+                        ),
+                      );
                     }
                   }),
                 ),
@@ -122,11 +88,50 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 class GenericTextField extends StatelessWidget {
-  const GenericTextField({Key? key}) : super(key: key);
+  final String? Function(String?)? validator;
+  final TextEditingController? controller;
+  final String labelText;
+  final bool _obscureText;
+  final Widget? sufixIcon;
+
+  const GenericTextField({
+    Key? key,
+    this.controller,
+    this.validator,
+    this.sufixIcon,
+    required this.labelText,
+    bool obscureText = false,
+  })  : _obscureText = obscureText,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return TextFormField(
+      controller: controller,
+      style: const TextStyle(color: Colors.white),
+      obscureText: _obscureText,
+      validator: validator,
+      decoration: InputDecoration(
+        suffixIcon: sufixIcon,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Colors.white),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(
+            color: Colors.white,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(
+            color: Colors.white,
+          ),
+        ),
+        labelText: labelText,
+      ),
+    );
   }
 }
 
