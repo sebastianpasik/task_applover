@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:task_applover/features/loader_and_success/loader_and_success_page.dart';
 import 'package:task_applover/helpers/fields_validator.dart';
 import 'package:task_applover/utilities/appl_assets.dart';
-import 'package:task_applover/utilities/appl_colors.dart';
 
 import 'bloc/login_bloc.dart';
+import 'widgets/generic_text_field.dart';
+import 'widgets/login_button.dart';
 
 class LoginPage extends StatefulWidget {
   final FieldsValidator _fieldsValidator = FieldsValidator();
@@ -33,16 +34,19 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SvgPicture.asset(
-                  ApplAsset.apploverIcon,
-                  color: Colors.white,
+                Hero(
+                  tag: 'app-lover',
+                  child: SvgPicture.asset(
+                    ApplAsset.apploverIcon,
+                    color: Colors.white,
+                  ),
                 ),
                 const SizedBox(height: 16.0),
                 const Text(
                   'Login',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.white, fontSize: 20.0),
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 40.0),
                 GenericTextField(
                   labelText: 'Email address',
                   controller: emailAddress,
@@ -68,11 +72,14 @@ class _LoginPageState extends State<LoginPage> {
                   text: 'Login',
                   onPressed: () => setState(() {
                     if (_formKey.currentState!.validate()) {
-                      context.read<LoginBloc>().add(const LoginEvent.saveData());
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const LoaderAndSuccessPage(),
+                          builder: (context) => BlocProvider.value(
+                            value: context.read<LoginBloc>()
+                              ..add(LoginEvent.saveData(emailAddress.text, password.text)),
+                            child: const LoaderAndSuccessPage(),
+                          ),
                         ),
                       );
                     }
@@ -80,104 +87,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class GenericTextField extends StatelessWidget {
-  final String? Function(String?)? validator;
-  final TextEditingController? controller;
-  final String labelText;
-  final bool _obscureText;
-  final Widget? sufixIcon;
-
-  const GenericTextField({
-    Key? key,
-    this.controller,
-    this.validator,
-    this.sufixIcon,
-    required this.labelText,
-    bool obscureText = false,
-  })  : _obscureText = obscureText,
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      style: const TextStyle(color: Colors.white),
-      obscureText: _obscureText,
-      validator: validator,
-      decoration: InputDecoration(
-        suffixIcon: sufixIcon,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Colors.white),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(
-            color: Colors.white,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(
-            color: Colors.white,
-          ),
-        ),
-        labelText: labelText,
-      ),
-    );
-  }
-}
-
-class LoginButton extends StatelessWidget {
-  final VoidCallback? onPressed;
-  final String text;
-  final double height;
-  final double width;
-  final Color textColor;
-  final BorderRadiusGeometry? borderRadius;
-
-  const LoginButton({
-    Key? key,
-    this.onPressed,
-    required this.text,
-    this.height = 50,
-    this.width = double.infinity,
-    this.textColor = Colors.white,
-    this.borderRadius,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: height,
-      width: width,
-      child: ElevatedButton(
-        style: ButtonStyle(
-          elevation: MaterialStateProperty.all(0),
-          backgroundColor: MaterialStateProperty.all(ApplColor.appLoverGreen),
-          shadowColor: MaterialStateProperty.all(Colors.transparent),
-          overlayColor: MaterialStateProperty.resolveWith(
-            (states) => states.contains(MaterialState.pressed) ? textColor.withAlpha(128) : null,
-          ),
-          shape: MaterialStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: borderRadius ?? BorderRadius.circular(8),
-              side: const BorderSide(color: ApplColor.appLoverGreen),
-            ),
-          ),
-        ),
-        onPressed: onPressed,
-        child: Text(
-          text,
-          style: TextStyle(
-            color: textColor,
           ),
         ),
       ),

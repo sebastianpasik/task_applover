@@ -26,6 +26,7 @@ class TaskApplover extends StatelessWidget {
           hintColor: Colors.white,
           primaryColor: Colors.white,
           colorScheme: ThemeData().colorScheme.copyWith(primary: Colors.white),
+          primaryIconTheme: const IconThemeData(color: Colors.white),
           scaffoldBackgroundColor: ApplColor.background,
         ),
         home: LoginPage(),

@@ -20,7 +20,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     await event.map(
       saveData: (value) async {
         emit(const LoginState.loading());
-        Future.delayed(const Duration(milliseconds: 100), () {
+        await Future.delayed(const Duration(milliseconds: 700), () {
           emit(const LoginState.dataSaved());
         });
       },
